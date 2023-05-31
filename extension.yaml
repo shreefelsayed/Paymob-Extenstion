@@ -1,0 +1,66 @@
+name: paymob_ext
+displayName: Paymob
+icon: icon.png
+tags: [payments]
+version: 0.0.1
+billingRequired: true
+specVersion: v1beta  # Firebase Extensions specification version; don't change
+
+# Brief description of the task your extension performs (~1 sentence)
+description: >-
+  Make payments easliy in Egypt with paymob.
+
+author:
+  authorName: Armjld
+  url: https://paymob.com
+
+license: Apache-2.0  # Required license
+
+resources:
+  - name: onNewPaymentRequest
+    type: firebaseextensions.v1beta.function
+    properties:
+      eventTrigger:
+        eventType: providers/cloud.firestore/eventTypes/document.create
+        resource: projects/${PROJECT_ID}/databases/(default)/documents/paymentRequests/{documentID}
+
+  - name: onPaymentMade
+    type: firebaseextensions.v1beta.function
+    properties:
+      runtime: nodejs16
+      httpsTrigger: {}
+
+# Public URL for the source code of your extension
+sourceUrl: https://github.com/your-name/your-repo
+
+params:
+  - param: paymobApi
+    label: Paymob Api Key
+    description: This is the main api key of your paymob account
+    type: secret
+    required: true
+
+  - param: PAYMENT_COLLECTION
+    label: Payment Collection Path
+    description: Where will you create your payment request documents?
+    type: string
+    default: paymentRequests
+    required: true
+
+  - param: IFRAME
+    label: Your Paymob IFRAME ID
+    description: This is the iframe id where you will receive credit card payments on, go to your paymob dashboard and then iframes and copy the iframe id should be only numbers
+    type: string
+    required: true
+
+  - param: creditCardId
+    label: Credit Card Integration Id
+    description: This is your publish credit card integration id, it should be only numbers and make sure it's not a test id
+    type: string
+    required: true
+
+  - param: mobileWalletId
+    label: Your Paymob IFRAME ID
+    description: This is your publish mobile wallet integration id, it should be only numbers and make sure it's not a test id
+    type: string
+    required: false
