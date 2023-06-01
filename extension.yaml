@@ -1,4 +1,4 @@
-name: paymob_ext
+name: paymob-extension
 displayName: Paymob
 icon: icon.png
 tags: [payments]
@@ -37,7 +37,7 @@ params:
   - param: paymobApi
     label: Paymob Api Key
     description: This is the main api key of your paymob account
-    type: secret
+    type: string
     required: true
 
   - param: PAYMENT_COLLECTION
@@ -60,7 +60,7 @@ params:
     required: true
 
   - param: mobileWalletId
-    label: Your Paymob IFRAME ID
+    label: Mobile Wallet Integration Id
     description: This is your publish mobile wallet integration id, it should be only numbers and make sure it's not a test id
     type: string
     required: false

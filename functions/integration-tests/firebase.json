@@ -12,6 +12,6 @@
     }
   },
   "extensions": {
-    "paymob_ext": "../.."
+    "paymob-extension": "../.."
   }
 }

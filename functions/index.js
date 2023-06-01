@@ -9,7 +9,6 @@
  */
 
 const functions = require("firebase-functions");
-const firestore = require('firebase-admin/firestore');
 const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 
