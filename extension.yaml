@@ -37,7 +37,7 @@ resources:
       httpsTrigger: {}
 
 # Public URL for the source code of your extension
-sourceUrl: https://github.com/shreefelsayed/Paymob-Extenstion
+sourceUrl: https://github.com/shreefelsayed/Paymob-Extenstion/tree/main
 
 params:
   - param: paymobApi
@@ -45,7 +45,7 @@ params:
     description: This is the main api key of your paymob account
     type: string
     required: true
-    
+
   - param: IFRAME
     label: Your Paymob IFRAME ID
     description: This is the iframe id where you will receive credit card payments on, go to your paymob dashboard and then iframes and copy the iframe id should be only numbers
