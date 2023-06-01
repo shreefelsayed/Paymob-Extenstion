@@ -27,3 +27,6 @@
 
 ## Version 0.1.2
 - Fixed some issuees
+
+## Version 0.1.3
+- First public release
