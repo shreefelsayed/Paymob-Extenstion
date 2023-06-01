@@ -18,6 +18,9 @@
     "mocha": "^10.2.0"
   },
   "scripts": {
+    "prepare": "npm run build",
+    "clean": "rimraf lib",
+    "build": "",
     "mocha": "mocha '**/*.spec.js'",
     "test": "(cd integration-tests && firebase emulators:exec 'npm run mocha' -P demo-test)"
   },
