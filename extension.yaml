@@ -1,8 +1,8 @@
-name: paymob-extension
+name: firebase-paymob-extension
 displayName: Paymob
 icon: icon.png
-tags: [payments]
-version: 0.0.1
+tags: [Payments]
+version: 0.1.2
 billingRequired: true
 specVersion: v1beta  # Firebase Extensions specification version; don't change
 
@@ -16,13 +16,19 @@ author:
 
 license: Apache-2.0  # Required license
 
+roles:
+  - role: datastore.owner
+    reason: Required to update the document
+
 resources:
   - name: onNewPaymentRequest
     type: firebaseextensions.v1beta.function
     properties:
+      runtime: nodejs16
       eventTrigger:
         eventType: providers/cloud.firestore/eventTypes/document.create
         resource: projects/${PROJECT_ID}/databases/(default)/documents/paymentRequests/{documentID}
+        
 
   - name: onPaymentMade
     type: firebaseextensions.v1beta.function

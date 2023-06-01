@@ -12,6 +12,6 @@
     }
   },
   "extensions": {
-    "paymob-extension": "../.."
+    "firebase-paymob-extension": "../.."
   }
 }

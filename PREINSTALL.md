@@ -4,7 +4,7 @@ and copy the integration keys and the api key and the iframe id from the dashboa
 
 # Important
 In your paymob dashboard, edit the intergration Transaction processed callback to this link (This step is important) :
-${function:onNewPaymentRequest.url}
+${function:onPaymentMade.url}
 
 Then create a document at firestore with collection "paymentRequests/{doc_id}"
 This document should contain the following variables :

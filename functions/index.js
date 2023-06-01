@@ -1,24 +1,34 @@
 /*
- * This template contains a HTTP function that
- * responds with a greeting when called
+ * Copyright 2023 Armjld, Inc.
  *
- * Reference PARAMETERS in your functions code with:
- * `process.env.<parameter-name>`
- * Learn more about building extensions in the docs:
- * https://firebase.google.com/docs/extensions/alpha/overview
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 const functions = require("firebase-functions");
-const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
+const admin = require("firebase-admin");
+admin.initializeApp();
 
 exports.onNewPaymentRequest = functions.firestore.document("paymentRequests/{payment_id}").onCreate(async (data, context) => {
   logger.log("New Request Made");
   const paymentData = data.data();
+  const id = data.id;
   var paymentUrl = "";
   var integrationId = "";
 
-  // --> Check if all fields does exist (First name - Last name - Price in EGP - email address - phone number - payment type)
+
+  await admin.firestore().collection("paymentRequests").doc(id).update({ "id": id, "timestamp": new Date() });
+
   if (paymentData.firstName == undefined ||
     paymentData.lastName == undefined ||
     paymentData.priceEGP == undefined ||
@@ -26,7 +36,7 @@ exports.onNewPaymentRequest = functions.firestore.document("paymentRequests/{pay
     paymentData.phoneNumber == undefined ||
     paymentData.paymentType == undefined) {
 
-    await data.ref.update({ "statue": "Missing data in the document", "id": data.id });
+    await admin.firestore().collection("paymentRequests").doc(id).update({ "statue": "Missing data in the document" });
     logger.log("Missing data in the document");
     return;
   }
@@ -34,14 +44,18 @@ exports.onNewPaymentRequest = functions.firestore.document("paymentRequests/{pay
   if (paymentData.paymentType == "Credit Card") {
     integrationId = process.env.creditCardId;
   } else if (paymentData.paymentType == "Mobile Wallet") {
+    if(process.env.mobileWalletId == undefined) {
+      await admin.firestore().collection("paymentRequests").doc(id).update({ "statue": "Missing Mobile Payment Intergration id, set in the extenstion settings" });
+      logger.log("Missing Mobile Payment Intergration id, set in the extenstion settings");
+      return;
+    }
     integrationId = process.env.mobileWalletId;
   }
 
   // --> Set the statue to (Pending Server)
-  await data.ref.update({ "statue": "Pending Server", "timestamp": new Date() });
+  await admin.firestore().collection("paymentRequests").doc(id).update({ "statue": "Pending Server" });
 
   // --> We get the payment token for the selected payment type
-
   var token = await getPaymentKey(integrationId, paymentData);
   const paymentKey = token.paymentKey;
 
@@ -50,17 +64,18 @@ exports.onNewPaymentRequest = functions.firestore.document("paymentRequests/{pay
     paymentUrl = "https://accept.paymob.com/api/acceptance/iframes/" + process.env.IFRAME + "?payment_token=" + paymentKey;
     logger.log("Credit Card payment request url " + paymentUrl);
   } else if (paymentData.paymentType == "Mobile Wallet") {
-    paymentUrl = getWalletUrl(paymentData.phoneNumber, paymentKey);
+    
+    paymentUrl = await getWalletUrl(paymentData.phoneNumber, paymentKey);
     logger.log("Wallet payment request url " + paymentUrl);
   } else {
-    await data.ref.update({ "statue": "Payment type should either be Credit Card, or Mobile Wallet" });
+    await admin.firestore().collection("paymentRequests").doc(id).update({ "statue": "Payment type should either be Credit Card, or Mobile Wallet" });
     console.error("Payment type should either be Credit Card, or Mobile Wallet");
     return;
   }
 
   // --> return the url of the payment link and update the statue from (Pending payment) and set the order id
 
-  await data.ref.update({ "statue": "Pending Payment", "paymentLink": paymentUrl, "paymobOrderId": token.orderId });
+  await admin.firestore().collection("paymentRequests").doc(id).update({ "statue": "Pending Payment", "paymentLink": paymentUrl, "paymobOrderId": token.orderId + "" });
 });
 
 exports.onPaymentMade = functions.https.onRequest(async (req, res) => {
@@ -78,21 +93,28 @@ exports.onPaymentMade = functions.https.onRequest(async (req, res) => {
     return;
   }
 
+  const request = walletReq.docs[0].data();
+
   // --> Check if the request is pending
-  if (walletReq[0].data().statue != "Pending Payment") {
-    logger.log("Request Statue is already " + walletReq[0].data().statue);
+  if (request.statue != "Pending Payment") {
+    logger.log("Request Statue is already " + request.statue);
+    await admin.firestore().collection("paymentRequests").doc(request.id).update({ "statue": "Failed" });
     res.send("ERROR");
     return;
   }
 
   if (!statue) {
     logger.log("Response Statue is failed");
-    awaitwalletReq[0].ref.update({ "statue": "Failed", "service_provider": service });
+    await admin.firestore().collection("paymentRequests").doc(request.id).update({ "statue": "Failed" });
     res.send("ERROR");
     return;
   }
 
-  await walletReq[0].ref.update({ "statue": "Success", "service_provider": service });
+  if (service != undefined) {
+    await admin.firestore().collection("paymentRequests").doc(request.id).update({ "statue": "Success", "service_provider": service });
+  } else {
+    await admin.firestore().collection("paymentRequests").doc(request.id).update({ "statue": "Success" });
+  }
   res.send("OK");
 })
 
