@@ -86,7 +86,7 @@ exports.onPaymentMade = functions.https.onRequest(async (req, res) => {
   const service = body.data.wallet_issuer;
 
   // --> Check if request exists
-  const walletReq = await admin.firestore().collection(process.env.PAYMENT_COLLECTION).where("paymobOrderId", "==", orderId).limit(1).get();
+  const walletReq = await admin.firestore().collection("paymentRequests").where("paymobOrderId", "==", orderId).limit(1).get();
   if (walletReq.empty) {
     logger.log("No request was found for this order");
     res.send("ERROR");

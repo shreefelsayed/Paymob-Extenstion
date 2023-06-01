@@ -18,7 +18,7 @@ license: Apache-2.0  # Required license
 
 roles:
   - role: datastore.owner
-    reason: Required to update the document
+    reason: Required to update the document with the payment link, and payment statue
 
 resources:
   - name: onNewPaymentRequest
@@ -45,14 +45,7 @@ params:
     description: This is the main api key of your paymob account
     type: string
     required: true
-
-  - param: PAYMENT_COLLECTION
-    label: Payment Collection Path
-    description: Where will you create your payment request documents?
-    type: string
-    default: paymentRequests
-    required: true
-
+    
   - param: IFRAME
     label: Your Paymob IFRAME ID
     description: This is the iframe id where you will receive credit card payments on, go to your paymob dashboard and then iframes and copy the iframe id should be only numbers
