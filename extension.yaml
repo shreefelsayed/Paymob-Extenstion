@@ -37,7 +37,7 @@ resources:
       httpsTrigger: {}
 
 # Public URL for the source code of your extension
-sourceUrl: https://github.com/shreefelsayed/Paymob-Extenstion/tree/main
+sourceUrl: https://github.com/shreefelsayed/Paymob-Extenstion
 
 params:
   - param: paymobApi
