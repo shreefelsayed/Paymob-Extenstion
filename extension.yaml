@@ -5,6 +5,7 @@ tags: [Payments]
 version: 0.1.3
 billingRequired: true
 specVersion: v1beta  # Firebase Extensions specification version; don't change
+sourceUrl: https://github.com/shreefelsayed/Paymob-Extenstion/
 
 # Brief description of the task your extension performs (~1 sentence)
 description: >-
@@ -36,8 +37,6 @@ resources:
       runtime: nodejs16
       httpsTrigger: {}
 
-# Public URL for the source code of your extension
-sourceUrl: https://github.com/shreefelsayed/Paymob-Extenstion
 
 params:
   - param: paymobApi
